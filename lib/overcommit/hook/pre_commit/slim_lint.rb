@@ -11,8 +11,10 @@ module Overcommit::Hook::PreCommit
       result = execute(command, args: applicable_files)
       return :pass if result.success?
 
+      output = result.stdout.split("\n").reject { |line| line =~ /^\(.*\)$/ }
+
       extract_messages(
-        result.stdout.split("\n"),
+        output,
         /^(?<file>(?:\w:)?[^:]+):(?<line>\d+)[^ ]* (?<type>[^ ]+)/,
         MESSAGE_TYPE_CATEGORIZER,
       )
